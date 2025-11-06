@@ -1,6 +1,7 @@
 {
-  "name": "client",
+  "name": "food-delivery-app-client",
   "version": "0.1.0",
+  "description": "food-delivery-app-client",
   "private": true,
   "scripts": {
     "dev": "next dev",
