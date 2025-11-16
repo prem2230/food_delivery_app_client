@@ -1,18 +1,133 @@
-import { RestaurantList } from '@/components/restaurant/RestaurantList'
-import { Cart } from '@/components/order/Cart'
+'use client'
+
+import { useEffect } from 'react'
+import Link from 'next/link'
+import { Button } from '@/components/ui/button'
+import { useAuthStore } from '@/store/auth'
+import { Sparkles, ArrowRight, Star, Users, Clock } from 'lucide-react'
 
 export default function Home() {
+  const { user, isAuthenticated, logout, checkAuth } = useAuthStore()
+
+  useEffect(() => {
+    checkAuth()
+  }, [checkAuth])
+
   return (
-    <div className="container mx-auto p-4">
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-        <div className="lg:col-span-3">
-          <h1 className="text-3xl font-bold mb-6">Restaurants</h1>
-          <RestaurantList />
+    <div className="min-h-screen bg-linear-to-br from-slate-900 via-purple-900 to-slate-900">
+      {/* Header */}
+      <header className="relative z-10 bg-glass border-b border-white/10">
+        <div className="container mx-auto px-4">
+          <div className="flex justify-between items-center py-6">
+            <div className="flex items-center gap-2">
+              <div className="w-10 h-10 gradient-primary rounded-xl flex items-center justify-center shadow-glow">
+                <Sparkles className="w-6 h-6 text-white" />
+              </div>
+              <h1 className="text-2xl font-bold text-white">FoodExpress</h1>
+            </div>
+
+            <div className="flex gap-3">
+              {isAuthenticated ? (
+                <div className="flex items-center gap-4">
+                  <div className="flex items-center gap-2 px-4 py-2 bg-glass rounded-full">
+                    <div className="w-8 h-8 gradient-primary rounded-full flex items-center justify-center">
+                      <span className="text-white text-sm font-semibold">
+                        {user?.name?.charAt(0).toUpperCase()}
+                      </span>
+                    </div>
+                    <span className="text-white text-sm">Hi, {user?.name}</span>
+                  </div>
+                  <Button
+                    onClick={logout}
+                    variant="outline"
+                    className="border-white/20 text-white bg-glass-hover cursor-pointer"
+                  >
+                    Logout
+                  </Button>
+                </div>
+              ) : (
+                <>
+                  <Link href="/login">
+                    <Button variant="outline" className="border-white/20 text-white bg-glass-hover cursor-pointer">
+                      Login
+                    </Button>
+                  </Link>
+                  <Link href="/register">
+                    <Button className="gradient-primary hover:shadow-glow transition-all duration-300 cursor-pointer">
+                      Sign Up
+                    </Button>
+                  </Link>
+                </>
+              )}
+            </div>
+          </div>
         </div>
-        <div className="lg:col-span-1">
-          <Cart />
+      </header>
+
+      {/* Hero Section */}
+      <main className="relative">
+        {/* Background elements */}
+        <div className="absolute inset-0 overflow-hidden">
+          <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-purple-500/20 rounded-full blur-3xl animate-float"></div>
+          <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-pink-500/20 rounded-full blur-3xl animate-float" style={{ animationDelay: '2s' }}></div>
         </div>
-      </div>
+
+        <div className="relative z-10 container mx-auto px-4 py-20">
+          <div className="text-center max-w-4xl mx-auto">
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-glass rounded-full mb-8 animate-glow">
+              <Star className="w-4 h-4 text-yellow-400" />
+              <span className="text-white/90 text-sm">Rated #1 Food Delivery App</span>
+            </div>
+
+            <h2 className="text-6xl md:text-7xl font-bold text-white mb-6 leading-tight">
+              Delicious Food,
+              <span className="gradient-text">
+                {' '}Delivered Fast
+              </span>
+            </h2>
+
+            <p className="text-xl text-white/70 mb-12 max-w-2xl mx-auto">
+              Order from your favorite restaurants and get it delivered to your doorstep in minutes.
+              Fresh, fast, and always delicious.
+            </p>
+
+            {!isAuthenticated && (
+              <div className="flex flex-col sm:flex-row gap-4 justify-center mb-16">
+                <Link href="/register">
+                  <Button size="lg" className="gradient-primary text-white px-8 py-4 text-lg rounded-xl shadow-glass hover:shadow-glow transition-all duration-300 transform hover:scale-105 cursor-pointer">
+                    Get Started
+                    <ArrowRight className="w-5 h-5 ml-2" />
+                  </Button>
+                </Link>
+                <Link href="/login">
+                  <Button variant="outline" size="lg" className="border-white/20 text-white bg-glass-hover px-8 py-4 text-lg rounded-xl cursor-pointer">
+                    Sign In
+                  </Button>
+                </Link>
+              </div>
+            )}
+
+            {/* Stats */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-20">
+              <div className="bg-glass rounded-2xl p-6 shadow-glass hover:shadow-glow transition-all duration-300">
+                <Users className="w-8 h-8 text-purple-400 mx-auto mb-4" />
+                <div className="text-3xl font-bold text-white mb-2">50K+</div>
+                <div className="text-white/70">Happy Customers</div>
+              </div>
+              <div className="bg-glass rounded-2xl p-6 shadow-glass hover:shadow-glow transition-all duration-300">
+                <Clock className="w-8 h-8 text-pink-400 mx-auto mb-4" />
+                <div className="text-3xl font-bold text-white mb-2">15 min</div>
+                <div className="text-white/70">Average Delivery</div>
+              </div>
+              <div className="bg-glass rounded-2xl p-6 shadow-glass hover:shadow-glow transition-all duration-300">
+                <Star className="w-8 h-8 text-yellow-400 mx-auto mb-4" />
+                <div className="text-3xl font-bold text-white mb-2">4.9</div>
+                <div className="text-white/70">Customer Rating</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
     </div>
   )
 }

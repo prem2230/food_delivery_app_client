@@ -1,20 +1,40 @@
 export interface User {
     id: string
-    name: string
     email: string
-    role: 'customer' | 'restaurant_owner' | 'admin'
-    number: string
+    name: string
+    role: 'customer' | 'owner' | 'admin'
+    number: number
 }
 
-export interface LoginCredentials {
+export interface AuthState {
+    user: User | null
+    token: string | null
+    isAuthenticated: boolean
+    isLoading: boolean
+}
+
+export interface LoginRequest {
     email: string
     password: string
 }
 
-export interface RegisterData {
+export interface RegisterRequest {
     name: string
     email: string
     password: string
-    role: string
+    role: 'customer' | 'owner'
     number: string
+}
+
+export interface LoginResponse {
+    success: boolean
+    message: string
+    token: string
+    user: User
+}
+
+export interface RegisterResponse {
+    success: boolean
+    message: string
+    user: User
 }
