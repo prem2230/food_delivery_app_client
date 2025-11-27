@@ -8,6 +8,7 @@ interface AuthStore extends AuthState {
     register: (data: RegisterRequest) => Promise<void>
     logout: () => void
     checkAuth: () => Promise<void>
+    initialize: () => void
 }
 
 export const useAuthStore = create<AuthStore>()(
@@ -18,12 +19,24 @@ export const useAuthStore = create<AuthStore>()(
             isAuthenticated: false,
             isLoading: false,
 
+            initialize: () => {
+                if (typeof window !== 'undefined') {
+                    const token = localStorage.getItem('token')
+                    if (token) {
+                        set({ token, isAuthenticated: true })
+                        get().checkAuth()
+                    }
+                }
+            },
+
             login: async (data: LoginRequest) => {
                 set({ isLoading: true })
                 try {
                     const response = await authApi.login(data)
                     if (response.success) {
-                        localStorage.setItem('token', response.token)
+                        if (typeof window !== 'undefined') {
+                            localStorage.setItem('token', response.token)
+                        }
                         set({
                             user: response.user,
                             token: response.token,
@@ -42,7 +55,7 @@ export const useAuthStore = create<AuthStore>()(
                 try {
                     const response = await authApi.register(data)
                     if (response.success) {
-                        // For register, we need to login after successful registration
+                        // Auto login after successful registration
                         await get().login({ email: data.email, password: data.password })
                     }
                 } catch (error: any) {
@@ -52,7 +65,9 @@ export const useAuthStore = create<AuthStore>()(
             },
 
             logout: () => {
-                localStorage.removeItem('token')
+                if (typeof window !== 'undefined') {
+                    localStorage.removeItem('token')
+                }
                 set({
                     user: null,
                     token: null,
@@ -63,7 +78,10 @@ export const useAuthStore = create<AuthStore>()(
 
             checkAuth: async () => {
                 const token = localStorage.getItem('token')
-                if (!token) return
+                if (!token) {
+                    set({ isAuthenticated: false, user: null, token: null })
+                    return
+                }
 
                 try {
                     const response = await authApi.getProfile()
@@ -73,7 +91,9 @@ export const useAuthStore = create<AuthStore>()(
                         isAuthenticated: true,
                     })
                 } catch (error) {
-                    localStorage.removeItem('token')
+                    if (typeof window !== 'undefined') {
+                        localStorage.removeItem('token')
+                    }
                     set({
                         user: null,
                         token: null,

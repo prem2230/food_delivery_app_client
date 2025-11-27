@@ -1,7 +1,10 @@
+'use client'
+
 import type { Metadata } from "next"
 import { Geist, Geist_Mono } from "next/font/google"
-import { ThemeProvider } from "@/components/ui/theme-provider"
 import "./globals.css"
+import { useEffect } from 'react'
+import { useAuthStore } from '@/store/auth'
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -13,9 +16,14 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 })
 
-export const metadata: Metadata = {
-  title: "FoodExpress - Delicious Food Delivered Fast",
-  description: "Order from your favorite restaurants and get it delivered to your doorstep",
+function AuthInitializer({ children }: { children: React.ReactNode }) {
+  const { initialize } = useAuthStore()
+
+  useEffect(() => {
+    initialize()
+  }, [initialize])
+
+  return <>{children}</>
 }
 
 export default function RootLayout({
@@ -24,11 +32,11 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-        <ThemeProvider defaultTheme="dark" storageKey="food-app-theme">
+        <AuthInitializer>
           {children}
-        </ThemeProvider>
+        </AuthInitializer>
       </body>
     </html>
   )
