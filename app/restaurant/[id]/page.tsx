@@ -251,7 +251,6 @@ export default function RestaurantPage({ params }: { params: { id: string } }) {
                                                         <div className="flex items-center gap-3 w-full">
                                                             <Button
                                                                 variant="outline"
-                                                                size="sm"
                                                                 onClick={() => handleUpdateQuantity(item._id, quantity - 1)}
                                                                 className="border-white/20 text-white bg-glass hover:bg-white/15"
                                                             >
@@ -260,7 +259,6 @@ export default function RestaurantPage({ params }: { params: { id: string } }) {
                                                             <span className="font-bold text-white px-4 py-2 bg-glass rounded-lg">{quantity}</span>
                                                             <Button
                                                                 variant="outline"
-                                                                size="sm"
                                                                 onClick={() => handleUpdateQuantity(item._id, quantity + 1)}
                                                                 className="border-white/20 text-white bg-glass hover:bg-white/15"
                                                             >
