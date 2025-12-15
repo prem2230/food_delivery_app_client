@@ -4,10 +4,11 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { ArrowLeft, Plus, Minus, ShoppingCart, Star, Clock, MapPin, Sparkles } from 'lucide-react'
-import { useAuthStore } from '@/store/auth'
+import { ArrowLeft, Plus, Minus, Star, Clock, MapPin, Sparkles } from 'lucide-react'
 import { useCartStore } from '@/store/cart'
 import { restaurantAPI, foodAPI } from '@/lib/api'
+import { Header } from '@/components/layout/Header'
+import { ProtectedRoute } from '@/components/ProtectedRoute'
 
 interface Restaurant {
     _id: string
@@ -31,23 +32,18 @@ interface FoodItem {
     restaurantId: string
 }
 
-export default function RestaurantPage({ params }: { params: { id: string } }) {
+function RestaurantContent({ params }: { params: { id: string } }) {
     const [restaurant, setRestaurant] = useState<Restaurant | null>(null)
     const [foodItems, setFoodItems] = useState<FoodItem[]>([])
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState('')
 
-    const { isAuthenticated } = useAuthStore()
     const { items, addItem, updateQuantity } = useCartStore()
     const router = useRouter()
 
     useEffect(() => {
-        if (!isAuthenticated) {
-            router.push('/login')
-            return
-        }
         fetchData()
-    }, [isAuthenticated, router, params.id])
+    }, [params.id])
 
     const fetchData = async () => {
         try {
@@ -80,21 +76,15 @@ export default function RestaurantPage({ params }: { params: { id: string } }) {
         updateQuantity(itemId, newQuantity)
     }
 
-    if (!isAuthenticated) {
-        return <div className="min-h-screen bg-linear-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center">
-            <div className="text-center">
-                <div className="animate-spin rounded-full h-8 w-8 border-2 border-purple-400 border-t-transparent mx-auto mb-4"></div>
-                <p className="text-white/70">Redirecting to login...</p>
-            </div>
-        </div>
-    }
-
     if (loading) {
         return (
-            <div className="min-h-screen bg-linear-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center">
-                <div className="bg-glass rounded-2xl p-8 shadow-glass">
-                    <div className="animate-spin rounded-full h-8 w-8 border-2 border-purple-400 border-t-transparent mx-auto mb-4"></div>
-                    <p className="text-white/70">Loading restaurant menu...</p>
+            <div className="min-h-screen bg-linear-to-br from-slate-900 via-purple-900 to-slate-900">
+                <Header />
+                <div className="flex items-center justify-center py-20">
+                    <div className="bg-glass rounded-2xl p-8 shadow-glass">
+                        <div className="animate-spin rounded-full h-8 w-8 border-2 border-purple-400 border-t-transparent mx-auto mb-4"></div>
+                        <p className="text-white/70">Loading restaurant menu...</p>
+                    </div>
                 </div>
             </div>
         )
@@ -102,12 +92,15 @@ export default function RestaurantPage({ params }: { params: { id: string } }) {
 
     if (error || !restaurant) {
         return (
-            <div className="min-h-screen bg-linear-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center">
-                <div className="bg-glass rounded-2xl p-8 shadow-glass text-center">
-                    <p className="text-red-400 mb-4">{error || 'Restaurant not found'}</p>
-                    <Button onClick={() => router.back()} className="gradient-primary">
-                        Go Back
-                    </Button>
+            <div className="min-h-screen bg-linear-to-br from-slate-900 via-purple-900 to-slate-900">
+                <Header />
+                <div className="flex items-center justify-center py-20">
+                    <div className="bg-glass rounded-2xl p-8 shadow-glass text-center">
+                        <p className="text-red-400 mb-4">{error || 'Restaurant not found'}</p>
+                        <Button onClick={() => router.back()} className="gradient-primary">
+                            Go Back
+                        </Button>
+                    </div>
                 </div>
             </div>
         )
@@ -121,8 +114,6 @@ export default function RestaurantPage({ params }: { params: { id: string } }) {
         return acc
     }, {} as Record<string, FoodItem[]>)
 
-    const cartTotal = items.reduce((sum, item) => sum + (item.price * item.quantity), 0)
-
     return (
         <div className="min-h-screen bg-linear-to-br from-slate-900 via-purple-900 to-slate-900">
             {/* Animated background elements */}
@@ -131,35 +122,19 @@ export default function RestaurantPage({ params }: { params: { id: string } }) {
                 <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-pink-500/20 rounded-full blur-3xl animate-float" style={{ animationDelay: '2s' }}></div>
             </div>
 
-            {/* Header */}
-            <header className="relative z-10 bg-glass border-b border-white/10 sticky top-0">
-                <div className="container mx-auto px-4">
-                    <div className="flex items-center justify-between py-6">
-                        <Button
-                            variant="outline"
-                            onClick={() => router.back()}
-                            className="border-white/20 text-white bg-glass hover:bg-white/15 transition-all"
-                        >
-                            <ArrowLeft className="w-4 h-4 mr-2" />
-                            Back to Restaurants
-                        </Button>
-
-                        <div className="flex items-center gap-4">
-                            <div className="flex items-center gap-2 px-4 py-2 bg-glass rounded-full">
-                                <ShoppingCart className="w-5 h-5 text-white" />
-                                <span className="text-white font-medium">{items.length} items</span>
-                                {items.length > 0 && (
-                                    <Badge className="gradient-primary animate-glow">
-                                        ${cartTotal.toFixed(2)}
-                                    </Badge>
-                                )}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </header>
+            <Header />
 
             <main className="relative z-10 container mx-auto px-4 py-8">
+                {/* Back Button */}
+                <Button
+                    variant="outline"
+                    onClick={() => router.back()}
+                    className="border-white/20 text-white bg-glass hover:bg-white/15 transition-all mb-6"
+                >
+                    <ArrowLeft className="w-4 h-4 mr-2" />
+                    Back to Restaurants
+                </Button>
+
                 {/* Restaurant Info */}
                 <div className="bg-glass rounded-3xl p-8 shadow-glass mb-8">
                     <div className="flex flex-col md:flex-row gap-6">
@@ -282,5 +257,13 @@ export default function RestaurantPage({ params }: { params: { id: string } }) {
                 )}
             </main>
         </div>
+    )
+}
+
+export default function RestaurantPage({ params }: { params: { id: string } }) {
+    return (
+        <ProtectedRoute>
+            <RestaurantContent params={params} />
+        </ProtectedRoute>
     )
 }

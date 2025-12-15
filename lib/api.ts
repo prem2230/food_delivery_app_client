@@ -56,6 +56,8 @@ export const foodAPI = {
 
 // Order API
 export const orderAPI = {
-    create: (orderData: any) => api.post('/api/v1/orders', orderData),
-    getMyOrders: () => api.get('/api/v1/orders/my-orders'),
+    placeOrder: (orderData: any) => api.post('/api/v1/orders/place-order', orderData),
+    getMyOrders: () => api.get('/api/v1/orders/get-all-ordersByUser'),
+    getOrderById: (orderId: string) => api.get(`/api/v1/orders/get-order/${orderId}`),
+    cancelOrder: (orderId: string) => api.put(`/api/v1/orders/cancel-order/${orderId}`),
 }

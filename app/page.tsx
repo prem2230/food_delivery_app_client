@@ -4,10 +4,11 @@ import { useEffect } from 'react'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { useAuthStore } from '@/store/auth'
-import { Sparkles, ArrowRight, Star, Users, Clock } from 'lucide-react'
+import { ArrowRight, Star, Users, Clock } from 'lucide-react'
+import { Header } from '@/components/layout/Header'
 
 export default function Home() {
-  const { user, isAuthenticated, logout, checkAuth } = useAuthStore()
+  const { isAuthenticated, checkAuth } = useAuthStore()
 
   useEffect(() => {
     checkAuth()
@@ -15,54 +16,7 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-linear-to-br from-slate-900 via-purple-900 to-slate-900">
-      {/* Header */}
-      <header className="relative z-10 bg-glass border-b border-white/10">
-        <div className="container mx-auto px-4">
-          <div className="flex justify-between items-center py-6">
-            <div className="flex items-center gap-2">
-              <div className="w-10 h-10 gradient-primary rounded-xl flex items-center justify-center shadow-glow">
-                <Sparkles className="w-6 h-6 text-white" />
-              </div>
-              <h1 className="text-2xl font-bold text-white">FoodExpress</h1>
-            </div>
-
-            <div className="flex gap-3">
-              {isAuthenticated ? (
-                <div className="flex items-center gap-4">
-                  <div className="flex items-center gap-2 px-4 py-2 bg-glass rounded-full">
-                    <div className="w-8 h-8 gradient-primary rounded-full flex items-center justify-center">
-                      <span className="text-white text-sm font-semibold">
-                        {user?.name?.charAt(0).toUpperCase()}
-                      </span>
-                    </div>
-                    <span className="text-white text-sm">Hi, {user?.name}</span>
-                  </div>
-                  <Button
-                    onClick={logout}
-                    variant="outline"
-                    className="border-white/20 text-white bg-glass-hover cursor-pointer"
-                  >
-                    Logout
-                  </Button>
-                </div>
-              ) : (
-                <>
-                  <Link href="/login">
-                    <Button variant="outline" className="border-white/20 text-white bg-glass-hover cursor-pointer">
-                      Login
-                    </Button>
-                  </Link>
-                  <Link href="/register">
-                    <Button className="gradient-primary hover:shadow-glow transition-all duration-300 cursor-pointer">
-                      Sign Up
-                    </Button>
-                  </Link>
-                </>
-              )}
-            </div>
-          </div>
-        </div>
-      </header>
+      <Header />
 
       {/* Hero Section */}
       <main className="relative">

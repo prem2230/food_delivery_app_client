@@ -1,14 +1,13 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { Clock, Star, Truck, MapPin, LogOut, ShoppingCart, Sparkles } from 'lucide-react'
-import { useAuthStore } from '@/store/auth'
+import { Clock, Star, Truck, MapPin } from 'lucide-react'
 import { useCartStore } from '@/store/cart'
 import { restaurantAPI } from '@/lib/api'
+import { Header } from '@/components/layout/Header'
 import { ProtectedRoute } from '@/components/ProtectedRoute'
 
 interface Restaurant {
@@ -28,9 +27,6 @@ function RestaurantsContent() {
     const [restaurants, setRestaurants] = useState<Restaurant[]>([])
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState('')
-
-    const { user, logout } = useAuthStore()
-    const { items } = useCartStore()
 
     useEffect(() => {
         fetchRestaurants()
@@ -58,51 +54,7 @@ function RestaurantsContent() {
                 <div className="absolute top-1/2 left-1/2 w-96 h-96 bg-indigo-500/10 rounded-full blur-3xl animate-float" style={{ animationDelay: '4s' }}></div>
             </div>
 
-            {/* Header */}
-            <header className="relative z-10 bg-glass border-b border-white/10">
-                <div className="container mx-auto px-4">
-                    <div className="flex justify-between items-center py-6">
-                        <div className="flex items-center gap-4">
-                            <div className="w-10 h-10 gradient-primary rounded-xl flex items-center justify-center shadow-glow">
-                                <Sparkles className="w-6 h-6 text-white" />
-                            </div>
-                            <div>
-                                <h1 className="text-2xl font-bold text-white">FoodExpress</h1>
-                                <p className="text-white/60 text-sm">Welcome back, {user?.name}</p>
-                            </div>
-                        </div>
-
-                        <div className="flex items-center gap-3">
-                            <Link href="/orders">
-                                <Button variant="outline" className="border-white/20 text-white bg-glass hover:bg-white/15 transition-all">
-                                    Orders
-                                </Button>
-                            </Link>
-
-                            <div className="relative">
-                                <Button variant="outline" className="border-white/20 text-white bg-glass hover:bg-white/15 transition-all">
-                                    <ShoppingCart className="w-4 h-4 mr-2" />
-                                    Cart
-                                    {items.length > 0 && (
-                                        <Badge className="ml-2 gradient-primary text-white text-xs px-1.5 py-0.5 animate-glow">
-                                            {items.length}
-                                        </Badge>
-                                    )}
-                                </Button>
-                            </div>
-
-                            <Button
-                                variant="outline"
-                                onClick={logout}
-                                className="border-white/20 text-white bg-glass hover:bg-white/15 transition-all"
-                            >
-                                <LogOut className="w-4 h-4 mr-2" />
-                                Logout
-                            </Button>
-                        </div>
-                    </div>
-                </div>
-            </header>
+            <Header />
 
             {/* Main Content */}
             <main className="relative z-10 container mx-auto px-4 py-8">
