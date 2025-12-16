@@ -36,7 +36,7 @@ export function Header() {
     const homeLink = isAuthenticated ? '/restaurants' : '/'
 
     return (
-        <header className="relative z-50 bg-glass border-b border-white/10 sticky top-0">
+        <header className="relative z-50 bg-glass border-b border-white/10 top-0">
             <div className="container mx-auto px-4">
                 <div className="flex justify-between items-center py-4">
                     {/* Logo */}
