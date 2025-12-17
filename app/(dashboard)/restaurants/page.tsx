@@ -99,7 +99,7 @@ function RestaurantsContent() {
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {restaurants.map((restaurant) => (
                         <div key={restaurant._id} className="bg-glass rounded-2xl overflow-hidden shadow-glass hover:shadow-glow transition-all duration-300 transform hover:scale-[1.02] group">
-                            <div className="aspect-video bg-gradient-to-br from-purple-500/20 to-pink-500/20 flex items-center justify-center relative overflow-hidden">
+                            <div className="aspect-video bg-linear-to-br from-purple-500/20 to-pink-500/20 flex items-center justify-center relative overflow-hidden">
                                 {restaurant.image ? (
                                     <img
                                         src={restaurant.image}
