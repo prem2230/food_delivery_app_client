@@ -9,21 +9,7 @@ import { useAuthStore } from '@/store/auth'
 import { Header } from '@/components/layout/Header'
 import { ProtectedRoute } from '@/components/ProtectedRoute'
 import { orderAPI } from '@/lib/api'
-
-interface Order {
-    _id: string
-    items: Array<{
-        _id: string
-        name: string
-        price: number
-        quantity: number
-    }>
-    totalAmount: number
-    status: string
-    deliveryAddress: string
-    createdAt: string
-    restaurantId: string
-}
+import { Order } from '@/types/order'
 
 function OrdersContent() {
     const [orders, setOrders] = useState<Order[]>([])

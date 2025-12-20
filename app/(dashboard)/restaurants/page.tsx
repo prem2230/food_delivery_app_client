@@ -9,19 +9,7 @@ import { useCartStore } from '@/store/cart'
 import { restaurantAPI } from '@/lib/api'
 import { Header } from '@/components/layout/Header'
 import { ProtectedRoute } from '@/components/ProtectedRoute'
-
-interface Restaurant {
-    _id: string
-    name: string
-    description: string
-    address: string
-    cuisine: string
-    rating?: number
-    deliveryTime?: string
-    deliveryFee?: number
-    image?: string
-    isActive: boolean
-}
+import { Restaurant } from '@/types/restaurant'
 
 function RestaurantsContent() {
     const [restaurants, setRestaurants] = useState<Restaurant[]>([])
