@@ -12,6 +12,8 @@ import { Label } from '@/components/ui/label'
 import { useAuthStore } from '@/store/auth'
 import { registerSchema, type RegisterFormData } from '@/lib/validators'
 
+export const dynamic = 'force-dynamic'
+
 export default function RegisterPage() {
     const [showPassword, setShowPassword] = useState(false)
     const router = useRouter()
@@ -38,14 +40,13 @@ export default function RegisterPage() {
             router.push('/')
         } catch (error: any) {
             setError('root', {
-                message: error.response?.data?.message || 'Registration failed',
+                message: error.message || 'Registration failed',
             })
         }
     }
 
     return (
         <div className="min-h-screen relative overflow-hidden bg-linear-to-br from-emerald-900 via-teal-900 to-cyan-900">
-            {/* Animated background elements */}
             <div className="absolute inset-0">
                 <div className="absolute top-1/4 right-1/4 w-96 h-96 bg-emerald-500/30 rounded-full blur-3xl animate-pulse"></div>
                 <div className="absolute bottom-1/4 left-1/4 w-96 h-96 bg-teal-500/30 rounded-full blur-3xl animate-pulse delay-1000"></div>
@@ -54,7 +55,6 @@ export default function RegisterPage() {
 
             <div className="relative z-10 min-h-screen flex items-center justify-center px-4 py-8">
                 <div className="w-full max-w-md">
-                    {/* Glassmorphism card */}
                     <div className="bg-glass rounded-3xl p-8 shadow-glass">
                         <div className="text-center mb-8">
                             <div className="inline-flex items-center justify-center w-16 h-16 bg-linear-to-r from-emerald-500 to-teal-500 rounded-2xl mb-4">
@@ -181,7 +181,7 @@ export default function RegisterPage() {
                             <Button
                                 type="submit"
                                 disabled={isLoading}
-                                className="w-full h-12 bg-linear-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white font-semibold rounded-xl shadow-glass hover:shadow-glow transition-all duration-300 transform hover:scale-[1.02] cursor-pointer"
+                                className="w-full h-12 bg-linear-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white font-semibold rounded-xl shadow-glass hover:shadow-glow transition-all duration-300 transform hover:scale-[1.02]"
                             >
                                 {isLoading ? (
                                     <div className="flex items-center gap-2">

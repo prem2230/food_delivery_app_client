@@ -1,7 +1,7 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import { useRouter, useSearchParams } from 'next/navigation'
+import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import Link from 'next/link'
@@ -12,20 +12,12 @@ import { Label } from '@/components/ui/label'
 import { useAuthStore } from '@/store/auth'
 import { loginSchema, type LoginFormData } from '@/lib/validators'
 
+export const dynamic = 'force-dynamic'
+
 export default function LoginPage() {
     const [showPassword, setShowPassword] = useState(false)
     const router = useRouter()
-    const searchParams = useSearchParams()
-    const { login, isLoading, isAuthenticated } = useAuthStore()
-
-    const redirectTo = searchParams.get('redirect') || '/restaurants'
-
-    // Redirect if already authenticated
-    useEffect(() => {
-        if (isAuthenticated) {
-            router.push(redirectTo)
-        }
-    }, [isAuthenticated, router, redirectTo])
+    const { login, isLoading } = useAuthStore()
 
     const {
         register,
@@ -39,17 +31,16 @@ export default function LoginPage() {
     const onSubmit = async (data: LoginFormData) => {
         try {
             await login(data)
-            router.push(redirectTo)
+            router.push('/')
         } catch (error: any) {
             setError('root', {
-                message: error.message,
+                message: error.message || 'Login failed',
             })
         }
     }
 
     return (
         <div className="min-h-screen relative overflow-hidden bg-linear-to-br from-purple-900 via-blue-900 to-indigo-900">
-            {/* Animated background elements */}
             <div className="absolute inset-0">
                 <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-purple-500/30 rounded-full blur-3xl animate-pulse"></div>
                 <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-blue-500/30 rounded-full blur-3xl animate-pulse delay-1000"></div>
@@ -58,7 +49,6 @@ export default function LoginPage() {
 
             <div className="relative z-10 min-h-screen flex items-center justify-center px-4">
                 <div className="w-full max-w-md">
-                    {/* Glassmorphism card */}
                     <div className="bg-glass rounded-3xl p-8 shadow-glass">
                         <div className="text-center mb-8">
                             <div className="inline-flex items-center justify-center w-16 h-16 gradient-primary rounded-2xl mb-4">
@@ -115,7 +105,7 @@ export default function LoginPage() {
                             <Button
                                 type="submit"
                                 disabled={isLoading}
-                                className="w-full h-12 gradient-primary text-white font-semibold rounded-xl shadow-glass hover:shadow-glow transition-all duration-300 transform hover:scale-[1.02] cursor-pointer"
+                                className="w-full h-12 gradient-primary text-white font-semibold rounded-xl shadow-glass hover:shadow-glow transition-all duration-300 transform hover:scale-[1.02]"
                             >
                                 {isLoading ? (
                                     <div className="flex items-center gap-2">
