@@ -11,6 +11,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { useAuthStore } from '@/store/auth'
 import { registerSchema, type RegisterFormData } from '@/lib/validators'
+import { homePathForRole } from '@/lib/utils'
 
 export const dynamic = 'force-dynamic'
 
@@ -37,7 +38,8 @@ export default function RegisterPage() {
     const onSubmit = async (data: RegisterFormData) => {
         try {
             await registerUser(data)
-            router.push('/')
+            const u = useAuthStore.getState().user
+            router.push(homePathForRole(u?.role))
         } catch (error: any) {
             setError('root', {
                 message: error.message || 'Registration failed',

@@ -1,11 +1,12 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
-import { AuthState, User, LoginRequest, RegisterRequest } from '@/types/auth'
+import { AuthState, User, LoginRequest } from '@/types/auth'
 import { authApi } from '@/lib/api'
+import type { RegisterFormData } from '@/lib/validators'
 
 interface AuthStore extends AuthState {
     login: (data: LoginRequest) => Promise<void>
-    register: (data: RegisterRequest) => Promise<void>
+    register: (data: RegisterFormData) => Promise<void>
     logout: () => void
     checkAuth: () => Promise<void>
     initialize: () => void
@@ -50,12 +51,17 @@ export const useAuthStore = create<AuthStore>()(
                 }
             },
 
-            register: async (data: RegisterRequest) => {
+            register: async (data: RegisterFormData) => {
                 set({ isLoading: true })
                 try {
-                    const response = await authApi.register(data)
+                    const response = await authApi.register({
+                        name: data.name,
+                        email: data.email,
+                        password: data.password,
+                        number: data.number,
+                        role: data.role === 'owner' ? 'restaurant_owner' : 'customer',
+                    })
                     if (response.success) {
-                        // Auto login after successful registration
                         await get().login({ email: data.email, password: data.password })
                     }
                 } catch (error: any) {

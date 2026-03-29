@@ -6,13 +6,16 @@ import { Button } from '@/components/ui/button'
 import { useAuthStore } from '@/store/auth'
 import { ArrowRight, Star, Users, Clock } from 'lucide-react'
 import { Header } from '@/components/layout/Header'
+import { homePathForRole } from '@/lib/utils'
 
 export default function Home() {
-  const { isAuthenticated, checkAuth } = useAuthStore()
+  const { isAuthenticated, checkAuth, user } = useAuthStore()
 
   useEffect(() => {
     checkAuth()
   }, [checkAuth])
+
+  const startHref = isAuthenticated && user ? homePathForRole(user.role) : '/register'
 
   return (
     <div className="min-h-screen bg-linear-to-br from-slate-900 via-purple-900 to-slate-900">
@@ -45,21 +48,30 @@ export default function Home() {
               Fresh, fast, and always delicious.
             </p>
 
-            {!isAuthenticated && (
-              <div className="flex flex-col sm:flex-row gap-4 justify-center mb-16">
-                <Link href="/register">
+            <div className="flex flex-col sm:flex-row gap-4 justify-center mb-16">
+              {!isAuthenticated ? (
+                <>
+                  <Link href="/register">
+                    <Button size="lg" className="gradient-primary text-white px-8 py-4 text-lg rounded-xl shadow-glass hover:shadow-glow transition-all duration-300 transform hover:scale-105 cursor-pointer">
+                      Get Started
+                      <ArrowRight className="w-5 h-5 ml-2" />
+                    </Button>
+                  </Link>
+                  <Link href="/login">
+                    <Button variant="outline" size="lg" className="border-white/20 text-white bg-glass-hover px-8 py-4 text-lg rounded-xl cursor-pointer">
+                      Sign In
+                    </Button>
+                  </Link>
+                </>
+              ) : (
+                <Link href={startHref}>
                   <Button size="lg" className="gradient-primary text-white px-8 py-4 text-lg rounded-xl shadow-glass hover:shadow-glow transition-all duration-300 transform hover:scale-105 cursor-pointer">
-                    Get Started
+                    Go to app
                     <ArrowRight className="w-5 h-5 ml-2" />
                   </Button>
                 </Link>
-                <Link href="/login">
-                  <Button variant="outline" size="lg" className="border-white/20 text-white bg-glass-hover px-8 py-4 text-lg rounded-xl cursor-pointer">
-                    Sign In
-                  </Button>
-                </Link>
-              </div>
-            )}
+              )}
+            </div>
 
             {/* Stats */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-20">

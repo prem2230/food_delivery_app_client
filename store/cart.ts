@@ -1,19 +1,21 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 
-interface CartItem {
+export interface CartItem {
     _id: string
     name: string
     price: number
     quantity: number
-    restaurantId?: string
+    restaurantId: string
+    restaurantOwnerId: string
+    restaurantName?: string
     description?: string
     category?: string
 }
 
 interface CartState {
     items: CartItem[]
-    addItem: (item: any) => void
+    addItem: (item: Omit<CartItem, 'quantity'> & { quantity?: number }) => void
     removeItem: (id: string) => void
     updateQuantity: (id: string, quantity: number) => void
     clearCart: () => void
@@ -26,22 +28,51 @@ export const useCartStore = create<CartState>()(
             items: [],
 
             addItem: (item) => {
+                const { restaurantId, restaurantOwnerId } = item
+                if (!restaurantId || !restaurantOwnerId) {
+                    console.warn('Cart item missing restaurantId or restaurantOwnerId')
+                    return
+                }
+
                 const items = get().items
-                const existing = items.find(i => i._id === item._id)
+                const first = items[0]
+
+                if (first && first.restaurantId !== restaurantId) {
+                    const ok =
+                        typeof window !== 'undefined' &&
+                        window.confirm(
+                            'Your cart has items from another restaurant. Clear the cart and add this item?'
+                        )
+                    if (!ok) return
+                    set({ items: [] })
+                }
+
+                const current = get().items
+                const existing = current.find((i) => i._id === item._id)
 
                 if (existing) {
                     set({
-                        items: items.map(i =>
-                            i._id === item._id ? { ...i, quantity: i.quantity + 1 } : i
-                        )
+                        items: current.map((i) =>
+                            i._id === item._id ? { ...i, quantity: i.quantity + (item.quantity ?? 1) } : i
+                        ),
                     })
                 } else {
-                    set({ items: [...items, { ...item, quantity: 1 }] })
+                    set({
+                        items: [
+                            ...current,
+                            {
+                                ...item,
+                                quantity: item.quantity ?? 1,
+                                restaurantId,
+                                restaurantOwnerId,
+                            },
+                        ],
+                    })
                 }
             },
 
             removeItem: (id) => {
-                set({ items: get().items.filter(item => item._id !== id) })
+                set({ items: get().items.filter((item) => item._id !== id) })
             },
 
             updateQuantity: (id, quantity) => {
@@ -50,17 +81,17 @@ export const useCartStore = create<CartState>()(
                     return
                 }
                 set({
-                    items: get().items.map(item =>
+                    items: get().items.map((item) =>
                         item._id === id ? { ...item, quantity } : item
-                    )
+                    ),
                 })
             },
 
             clearCart: () => set({ items: [] }),
 
             get total() {
-                return get().items.reduce((sum, item) => sum + (item.price * item.quantity), 0)
-            }
+                return get().items.reduce((sum, item) => sum + item.price * item.quantity, 0)
+            },
         }),
         { name: 'cart-storage' }
     )

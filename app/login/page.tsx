@@ -11,6 +11,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { useAuthStore } from '@/store/auth'
 import { loginSchema, type LoginFormData } from '@/lib/validators'
+import { homePathForRole } from '@/lib/utils'
 
 export const dynamic = 'force-dynamic'
 
@@ -31,7 +32,8 @@ export default function LoginPage() {
     const onSubmit = async (data: LoginFormData) => {
         try {
             await login(data)
-            router.push('/')
+            const u = useAuthStore.getState().user
+            router.push(homePathForRole(u?.role))
         } catch (error: any) {
             setError('root', {
                 message: error.message || 'Login failed',

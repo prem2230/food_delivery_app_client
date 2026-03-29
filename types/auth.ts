@@ -1,8 +1,10 @@
+export type UserRole = 'customer' | 'restaurant_owner' | 'admin'
+
 export interface User {
     id: string
     email: string
     name: string
-    role: 'customer' | 'owner' | 'admin'
+    role: UserRole
     number: number
 }
 
@@ -22,7 +24,7 @@ export interface RegisterRequest {
     name: string
     email: string
     password: string
-    role: 'customer' | 'owner'
+    role: 'customer' | 'restaurant_owner'
     number: string
 }
 

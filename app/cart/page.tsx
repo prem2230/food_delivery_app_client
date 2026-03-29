@@ -11,13 +11,16 @@ import { ShoppingCart, Plus, Minus, X, MapPin } from 'lucide-react'
 import { useCartStore } from '@/store/cart'
 import { Header } from '@/components/layout/Header'
 import { ProtectedRoute } from '@/components/ProtectedRoute'
+import { CUSTOMER_ONLY } from '@/lib/route-access'
 import { orderAPI } from '@/lib/api'
 
 function CartContent() {
     const [deliveryAddress, setDeliveryAddress] = useState('')
     const [loading, setLoading] = useState(false)
-    const { items, updateQuantity, removeItem, clearCart, total } = useCartStore()
+    const { items, updateQuantity, removeItem, clearCart } = useCartStore()
     const router = useRouter()
+
+    const subtotal = items.reduce((sum, item) => sum + item.price * item.quantity, 0)
 
     const handlePlaceOrder = async () => {
         if (!deliveryAddress.trim()) {
@@ -25,16 +28,24 @@ function CartContent() {
             return
         }
 
+        const first = items[0]
+        if (!first?.restaurantId || !first?.restaurantOwnerId) {
+            alert('Cart is missing restaurant information. Please add items from a restaurant menu again.')
+            return
+        }
+
         setLoading(true)
         try {
             const orderData = {
-                items: items.map(item => ({
+                restaurantId: first.restaurantId,
+                restaurantOwnerId: first.restaurantOwnerId,
+                items: items.map((item) => ({
                     foodItemId: item._id,
                     quantity: item.quantity,
-                    price: item.price
+                    price: item.price,
                 })),
-                totalAmount: total,
-                deliveryAddress: deliveryAddress.trim()
+                totalAmount: subtotal,
+                deliveryAddress: deliveryAddress.trim(),
             }
 
             await orderAPI.placeOrder(orderData)
@@ -145,7 +156,7 @@ function CartContent() {
                                     <div className="space-y-3">
                                         <div className="flex justify-between text-white/70">
                                             <span>Subtotal ({items.length} items)</span>
-                                            <span>${total.toFixed(2)}</span>
+                                            <span>${subtotal.toFixed(2)}</span>
                                         </div>
                                         <div className="flex justify-between text-white/70">
                                             <span>Delivery Fee</span>
@@ -154,7 +165,7 @@ function CartContent() {
                                         <div className="border-t border-white/20 pt-3">
                                             <div className="flex justify-between text-lg font-bold text-white">
                                                 <span>Total</span>
-                                                <span className="gradient-text">${total.toFixed(2)}</span>
+                                                <span className="gradient-text">${subtotal.toFixed(2)}</span>
                                             </div>
                                         </div>
                                     </div>
@@ -198,7 +209,7 @@ function CartContent() {
 
 export default function CartPage() {
     return (
-        <ProtectedRoute>
+        <ProtectedRoute allowedRoles={CUSTOMER_ONLY}>
             <CartContent />
         </ProtectedRoute>
     )

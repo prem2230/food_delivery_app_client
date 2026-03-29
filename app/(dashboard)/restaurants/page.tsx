@@ -5,10 +5,10 @@ import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Clock, Star, Truck, MapPin } from 'lucide-react'
-import { useCartStore } from '@/store/cart'
 import { restaurantAPI } from '@/lib/api'
 import { Header } from '@/components/layout/Header'
 import { ProtectedRoute } from '@/components/ProtectedRoute'
+import { CUSTOMER_ONLY } from '@/lib/route-access'
 import { Restaurant } from '@/types/restaurant'
 
 function RestaurantsContent() {
@@ -125,10 +125,10 @@ function RestaurantsContent() {
                                     </div>
 
                                     <div className="flex items-center justify-between text-sm text-white/60 mb-4">
-                                        {restaurant.deliveryTime && (
+                                        {restaurant.deliveryTime != null && (
                                             <div className="flex items-center gap-1">
                                                 <Clock className="w-4 h-4" />
-                                                <span>{restaurant.deliveryTime}</span>
+                                                <span>{restaurant.deliveryTime} min</span>
                                             </div>
                                         )}
 
@@ -170,7 +170,7 @@ function RestaurantsContent() {
 
 export default function RestaurantsPage() {
     return (
-        <ProtectedRoute>
+        <ProtectedRoute allowedRoles={CUSTOMER_ONLY}>
             <RestaurantsContent />
         </ProtectedRoute>
     )
